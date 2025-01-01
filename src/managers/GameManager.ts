@@ -2,6 +2,7 @@ import { Bird } from "@/src/entities/Bird";
 import { CollisionManager } from "@/src/managers/CollisionManager";
 import { PipeManager } from "@/src/managers/PipeManager"
 import { RenderManager } from "@/src/managers/RenderManager";
+import { ScoreManager } from '@/src/managers/ScoreManager';
 import { setupCanvas } from "@/src/utils/canvas";
 
 import type { GameState } from "@/src/types";
@@ -12,6 +13,7 @@ export class GameManager {
     private readonly collisionManager;
     private readonly pipeManager;
     private readonly renderManager;
+    private readonly scoreManager;
 
     private gameState: GameState = 'RUNNING';
     private bird;
@@ -25,6 +27,7 @@ export class GameManager {
         this.collisionManager = new CollisionManager();
         this.pipeManager = new PipeManager();
         this.renderManager = new RenderManager(this.ctx);
+        this.scoreManager = new ScoreManager();
 
         this.setupEventListeners();
     }
@@ -53,6 +56,7 @@ export class GameManager {
         this.gameState = 'RUNNING';
         this.bird = new Bird();
         this.pipeManager.reset();
+        this.scoreManager.reset();
         this.lastTickTime = performance.now();
         requestAnimationFrame((time) => this.gameLoop(time));
     }
@@ -64,6 +68,7 @@ export class GameManager {
 
         this.bird.update(deltaTime);
         this.pipeManager.update(deltaTime);
+        this.scoreManager.update(this.bird, this.pipeManager.getPipes());
 
         if (this.collisionManager.checkCollisions(this.bird, this.pipeManager.getPipes())) {
             this.gameState = 'OVER';
@@ -75,7 +80,7 @@ export class GameManager {
         this.lastTickTime = timestamp;
 
         this.update(deltaTime);
-        this.renderManager.draw(this.bird, this.pipeManager, this.gameState);
+        this.renderManager.draw(this.bird, this.pipeManager, this.scoreManager, this.gameState);
 
         if (this.gameState === 'RUNNING') {
             requestAnimationFrame((time) => this.gameLoop(time))
