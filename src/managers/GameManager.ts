@@ -23,10 +23,10 @@ export class GameManager {
         this.canvas = document.getElementById('game-canvas') as HTMLCanvasElement;
         this.ctx = setupCanvas(this.canvas);
 
-        this.bird = new Bird();
+        this.bird = new Bird(this.canvas);
         this.collisionManager = new CollisionManager();
-        this.pipeManager = new PipeManager();
-        this.renderManager = new RenderManager(this.ctx);
+        this.pipeManager = new PipeManager(this.canvas);
+        this.renderManager = new RenderManager(this.ctx, this.canvas);
         this.scoreManager = new ScoreManager();
 
         this.setupEventListeners();
@@ -54,7 +54,7 @@ export class GameManager {
 
     private resetGame() {
         this.gameState = 'RUNNING';
-        this.bird = new Bird();
+        this.bird = new Bird(this.canvas);
         this.pipeManager.reset();
         this.scoreManager.reset();
         this.lastTickTime = performance.now();

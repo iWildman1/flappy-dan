@@ -4,8 +4,11 @@ import { config } from "@/src/config";
 export class PipeManager {
     private pipes: Pipe[] = [];
     private pipeSpawnTimer = 0;
+    private readonly canvas;
 
-    constructor() { };
+    constructor(canvas: HTMLCanvasElement) {
+        this.canvas = canvas;
+    };
 
     update(deltaTime: number) {
         this.updateExistingPipes(deltaTime);
@@ -27,7 +30,7 @@ export class PipeManager {
     }
 
     private spawnPipe() {
-        this.pipes.push(new Pipe());
+        this.pipes.push(new Pipe(this.canvas));
     }
 
     private removeOffScreenPipes() {

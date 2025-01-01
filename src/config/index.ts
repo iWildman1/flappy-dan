@@ -1,7 +1,7 @@
 export const config = {
     canvas: {
-        width: 480,
-        height: 640
+        width: 1039,
+        height: 714
     },
     bird: {
         width: 30,

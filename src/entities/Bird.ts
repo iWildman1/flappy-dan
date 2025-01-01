@@ -1,4 +1,5 @@
 import { config } from '@/src/config';
+import { getCanvasDimensions } from '@/src/utils/canvas';
 
 import { type GameObject } from '@/src/types';
 
@@ -8,12 +9,14 @@ export class Bird implements GameObject {
     private readonly width;
     private readonly height;
     private velocity = 0;
+    private readonly canvas;
 
-    constructor() {
+    constructor(canvas: HTMLCanvasElement) {
         this.x = config.bird.startX;
         this.y = config.bird.startY;
         this.width = config.bird.width;
         this.height = config.bird.height;
+        this.canvas = canvas;
     }
 
     jump() {
@@ -33,7 +36,9 @@ export class Bird implements GameObject {
     }
 
     isOutOfBounds() {
-        return this.y >= config.canvas.height - this.height
+        const dimensions = getCanvasDimensions(this.canvas);
+
+        return this.y >= dimensions.height - this.height
     }
 
     getBird() {
