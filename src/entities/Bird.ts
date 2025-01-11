@@ -14,6 +14,11 @@ export class Bird implements GameObject {
     private sprite: Sprite;
     private baseY: number;
     private startTime: number;
+    
+    private currentFrame: number = 0;
+    private lastFrameUpdate: number = 0;
+    private readonly FRAME_INTERVAL: number = 100; // Milliseconds between frame updates
+    private readonly SPRITE_X_POSITIONS: number[] = [3, 31, 59, 31];
 
     constructor(canvas: HTMLCanvasElement) {
         this.x = config.bird.startX;
@@ -45,24 +50,45 @@ export class Bird implements GameObject {
         this.y = this.baseY + amplitude * Math.sin(frequency * elapsedTime * Math.PI * 2);
     }
 
+    private getAnimationX(): number {
+        return this.SPRITE_X_POSITIONS[this.currentFrame];
+    }
+
     draw(ctx: CanvasRenderingContext2D) {
-            // Calculate the rotation angle based on the velocity
-            const angle = Math.atan2(this.velocity, 200);
+        // Update animation frame
+        const currentTime = performance.now();
+        if (currentTime - this.lastFrameUpdate > this.FRAME_INTERVAL) {
+            this.currentFrame = (this.currentFrame + 1) % this.SPRITE_X_POSITIONS.length;
+            this.lastFrameUpdate = currentTime;
+        }
 
-            // Save the current context state
-            ctx.save();
+        // Calculate the rotation angle based on the velocity
+        const angle = Math.atan2(this.velocity, 200);
 
-            // Translate to the bird's position
-            ctx.translate(config.bird.startX + this.width / 2, this.y + this.height / 2);
+        // Save the current context state
+        ctx.save();
 
-            // Rotate the context
-            ctx.rotate(angle);
+        // Translate to the bird's position
+        ctx.translate(config.bird.startX + this.width / 2, this.y + this.height / 2);
 
-            // Draw the bird image with the rotation applied
-            this.sprite.draw(ctx, 3, 488, 17, 15, -this.width / 2, -this.height / 2, this.width, this.height);
+        // Rotate the context
+        ctx.rotate(angle);
 
-            // Restore the context state
-            ctx.restore();
+        // Use getAnimationX() for the sprite's X position
+        this.sprite.draw(
+            ctx, 
+            this.getAnimationX(), 
+            488, 
+            17, 
+            15, 
+            -this.width / 2, 
+            -this.height / 2, 
+            this.width, 
+            this.height
+        );
+
+        // Restore the context state
+        ctx.restore();
     }
 
     isOutOfBounds() {
