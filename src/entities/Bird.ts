@@ -1,4 +1,4 @@
-import { Sprite } from '@/src/utils/Sprite';
+import { sprite } from '@/src/utils/Sprite';
 import { config } from '@/src/config';
 import { getCanvasDimensions } from '@/src/utils/canvas';
 
@@ -11,7 +11,6 @@ export class Bird implements GameObject {
     private readonly height;
     private velocity = 0;
     private readonly canvas;
-    private sprite: Sprite;
     private baseY: number;
     private startTime: number;
     private currentTime = 0;
@@ -29,8 +28,6 @@ export class Bird implements GameObject {
         this.canvas = canvas;
         this.baseY = config.bird.startY;
         this.startTime = performance.now();
-
-        this.sprite = new Sprite('/images/sprites.png');
     }
 
     jump() {
@@ -76,7 +73,7 @@ export class Bird implements GameObject {
         ctx.rotate(angle);
 
         // Use getAnimationX() for the sprite's X position
-        this.sprite.draw(
+        sprite.draw(
             ctx, 
             this.getAnimationX(), 
             488, 

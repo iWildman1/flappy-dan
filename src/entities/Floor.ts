@@ -1,11 +1,10 @@
-import { Sprite } from '@/src/utils/Sprite';
+import { sprite } from '@/src/utils/Sprite';
 import { getCanvasDimensions } from '@/src/utils/canvas';
 import { type GameObject } from '@/src/types';
 
 export class Floor implements GameObject {
     private x = 0;
     private readonly canvas;
-    private readonly sprite: Sprite;
     private readonly speed = 200;
     private static readonly SPRITE_WIDTH = 168;
     private static readonly SPRITE_HEIGHT = 55;
@@ -14,7 +13,6 @@ export class Floor implements GameObject {
 
     constructor(canvas: HTMLCanvasElement) {
         this.canvas = canvas;
-        this.sprite = new Sprite('/images/sprites.png');
     }
 
     update(deltaTime: number) {
@@ -28,7 +26,7 @@ export class Floor implements GameObject {
         
         // Draw multiple floor segments to cover the entire width
         for (let x = this.x; x < dimensions.width + Floor.SPRITE_WIDTH; x += Floor.SPRITE_WIDTH) {
-            this.sprite.draw(
+            sprite.draw(
                 ctx,
                 Floor.SPRITE_X,
                 Floor.SPRITE_Y,

@@ -1,4 +1,4 @@
-import { Sprite } from '@/src/utils/Sprite'
+import { sprite } from '@/src/utils/Sprite'
 import { config } from '@/src/config';
 import { getCanvasDimensions } from '@/src/utils/canvas';
 
@@ -10,7 +10,6 @@ export class Pipe implements GameObject {
     private topHeight;
     private bottomY;
     private readonly canvas;
-    private sprite: Sprite;
 
     constructor(canvas: HTMLCanvasElement) {
         this.canvas = canvas;
@@ -22,8 +21,6 @@ export class Pipe implements GameObject {
         this.width = config.pipes.width;
         this.topHeight = Math.random() * (usableHeight - config.pipes.gapHeight - 100) + 50;
         this.bottomY = this.topHeight + config.pipes.gapHeight;
-
-        this.sprite = new Sprite('/images/sprites.png');
     }
 
     update(deltaTime: number) {
@@ -51,18 +48,18 @@ export class Pipe implements GameObject {
         if (isTop) {
             // Draw the body
             for (let i = 0; i < height - pipeCapHeight; i++) {
-                this.sprite.draw(ctx, 56, pipeBodyY, pipeWidth, pipeBodyHeight, x, y + i, this.width, pipeBodyHeight);
+                sprite.draw(ctx, 56, pipeBodyY, pipeWidth, pipeBodyHeight, x, y + i, this.width, pipeBodyHeight);
             }
 
             // Draw the cap
-            this.sprite.draw(ctx, 56, pipeCapY, pipeWidth, pipeCapHeight, x, y + height - pipeCapHeight, this.width, pipeCapHeight);
+            sprite.draw(ctx, 56, pipeCapY, pipeWidth, pipeCapHeight, x, y + height - pipeCapHeight, this.width, pipeCapHeight);
         } else {
             // Draw the cap
-            this.sprite.draw(ctx, 56, pipeCapY, pipeWidth, pipeCapHeight, x, y, this.width, pipeCapHeight);
+            sprite.draw(ctx, 56, pipeCapY, pipeWidth, pipeCapHeight, x, y, this.width, pipeCapHeight);
 
             // Draw the body
             for (let i = pipeCapHeight; i < height; i++) {
-                this.sprite.draw(ctx, 56, pipeBodyY, pipeWidth, pipeBodyHeight, x, y + i, this.width, pipeBodyHeight);
+                sprite.draw(ctx, 56, pipeBodyY, pipeWidth, pipeBodyHeight, x, y + i, this.width, pipeBodyHeight);
             }
         }
     }
