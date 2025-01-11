@@ -8,8 +8,9 @@ import { setupCanvas } from "@/src/utils/canvas";
 
 import { StartScene } from "@/src/scenes/StartScene";
 import { MainScene } from "@/src/scenes/MainScene";
+import { GameOverScene } from "@/src/scenes/GameOverScene";
 
-import type { GameState, Scene } from "@/src/types";
+import type { Scene } from "@/src/types";
 
 export class GameManager {
     private readonly canvas;
@@ -20,7 +21,6 @@ export class GameManager {
     private readonly scoreManager;
     private readonly floor;
 
-    private gameState: GameState = 'START';
     private currentScene: Scene;
     private bird;
     private lastTickTime = 0;
@@ -36,7 +36,7 @@ export class GameManager {
         this.scoreManager = new ScoreManager();
         this.floor = new Floor(this.canvas);
 
-        this.currentScene = new StartScene(this.bird, this.floor);
+        this.currentScene = new StartScene(this.bird, this.floor, this.canvas);
 
         this.setupEventListeners();
     }
@@ -52,11 +52,11 @@ export class GameManager {
     }
 
     private handleInput() {
-        if (this.currentScene.getCurrentScene() === 'START') {
+        if (this.currentScene instanceof MainScene) {
             this.bird.jump();
         }
 
-        if (this.currentScene.getCurrentScene() === "OVER" || this.currentScene.getCurrentScene() === 'START') {
+        if (this.currentScene instanceof StartScene || this.currentScene instanceof GameOverScene) {
             this.resetGame();
         }
     }
@@ -71,20 +71,10 @@ export class GameManager {
     }
 
     private update(deltaTime: number) {
-        if (this.gameState !== 'OVER') {
-            this.floor.update(deltaTime);
-        }
+        this.currentScene.update(deltaTime);
 
-        if (this.gameState !== 'RUNNING') {
-            return;
-        }
-
-        this.bird.update(deltaTime);
-        this.pipeManager.update(deltaTime);
-        this.scoreManager.update(this.bird, this.pipeManager.getPipes());
-
-        if (this.collisionManager.checkCollisions(this.bird, this.pipeManager.getPipes())) {
-            this.gameState = 'OVER';
+        if (this.currentScene instanceof MainScene && this.currentScene.getIsGameOver()) {
+            this.currentScene = new GameOverScene(this.canvas, this.scoreManager.getScore())
         }
     }
 
@@ -92,17 +82,14 @@ export class GameManager {
         const deltaTime = timestamp - this.lastTickTime;
         this.lastTickTime = timestamp;
 
-        // this.update(deltaTime);
-        this.currentScene.update(deltaTime);
-        // this.renderManager.draw(this.bird, this.pipeManager, this.scoreManager, this.gameState, this.floor);
-        this.currentScene.draw(this.ctx);
+        this.update(deltaTime);
+        this.renderManager.draw(this.currentScene, this.floor, this.bird, this.pipeManager);
 
         // Always continue the animation frame
         requestAnimationFrame((time) => this.gameLoop(time));
     }
 
     start() {
-        this.gameState = 'START';
         this.lastTickTime = performance.now();
         requestAnimationFrame((time) => this.gameLoop(time));
     }

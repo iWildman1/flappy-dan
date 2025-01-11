@@ -47,7 +47,7 @@ export class Bird implements GameObject {
 
     draw(ctx: CanvasRenderingContext2D) {
             // Calculate the rotation angle based on the velocity
-            const angle = Math.atan2(this.velocity, 200); // Increase the divisor to make the rotation more gentle
+            const angle = Math.atan2(this.velocity, 200);
 
             // Save the current context state
             ctx.save();
@@ -67,7 +67,7 @@ export class Bird implements GameObject {
 
     isOutOfBounds() {
         const dimensions = getCanvasDimensions(this.canvas);
-        const floorY = dimensions.height - 55; // Floor height is 55px
+        const floorY = dimensions.height - 55; // TODO: Make this some kind of config
         return this.y >= floorY - this.height;
     }
 

@@ -6,7 +6,7 @@ export class Floor implements GameObject {
     private x = 0;
     private readonly canvas;
     private readonly sprite: Sprite;
-    private readonly speed = 200; // Match pipe speed from config
+    private readonly speed = 200;
     private static readonly SPRITE_WIDTH = 168;
     private static readonly SPRITE_HEIGHT = 55;
     private static readonly SPRITE_X = 292;

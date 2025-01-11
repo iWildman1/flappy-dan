@@ -13,6 +13,8 @@ export class MainScene implements Scene {
     private readonly scoreManager: ScoreManager;
     private readonly collisionManager: CollisionManager;
 
+    private isGameOver = false;
+
     constructor(bird: Bird, floor: Floor, pipeManager: PipeManager, scoreManager: ScoreManager, collisionManager: CollisionManager) {
         this.bird = bird;
         this.floor = floor;
@@ -29,8 +31,8 @@ export class MainScene implements Scene {
 
         this.collisionManager.checkCollisions(this.bird, this.pipeManager.getPipes());
 
-        if (this.collisionManager.checkCollisions(this.bird, this.pipeManager.getPipes())) {
-            // TODO: Transition scene and reset the game   
+        if (this.collisionManager.checkCollisions(this.bird, this.pipeManager.getPipes())) {  
+            this.isGameOver = true;
         }
     }
 
@@ -48,21 +50,8 @@ export class MainScene implements Scene {
     getCurrentScene(): GameState {
         return 'RUNNING';
     }
+
+    getIsGameOver() {
+        return this.isGameOver;
+    }
 }
-
-
-// if (this.gameState !== 'OVER') {
-//     this.floor.update(deltaTime);
-// }
-
-// if (this.gameState !== 'RUNNING') {
-//     return;
-// }
-
-// this.bird.update(deltaTime);
-// this.pipeManager.update(deltaTime);
-// this.scoreManager.update(this.bird, this.pipeManager.getPipes());
-
-// if (this.collisionManager.checkCollisions(this.bird, this.pipeManager.getPipes())) {
-//     this.gameState = 'OVER';
-// }
