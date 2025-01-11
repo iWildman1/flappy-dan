@@ -23,8 +23,8 @@ export class MainScene implements Scene {
         this.collisionManager = collisionManager;
     }
 
-    update(deltaTime: number) {
-        this.bird.update(deltaTime);
+    update(deltaTime: number, timestamp: number) {
+        this.bird.update(deltaTime, timestamp);
         this.floor.update(deltaTime);
         this.pipeManager.update(deltaTime);
         this.scoreManager.update(this.bird, this.pipeManager.getPipes())

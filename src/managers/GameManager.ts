@@ -70,8 +70,8 @@ export class GameManager {
         this.currentScene = new MainScene(this.bird, this.floor, this.pipeManager, this.scoreManager, this.collisionManager);
     }
 
-    private update(deltaTime: number) {
-        this.currentScene.update(deltaTime);
+    private update(deltaTime: number, timestamp: number) {
+        this.currentScene.update(deltaTime, timestamp);
 
         if (this.currentScene instanceof MainScene && this.currentScene.getIsGameOver()) {
             this.currentScene = new GameOverScene(this.canvas, this.scoreManager.getScore())
@@ -82,7 +82,7 @@ export class GameManager {
         const deltaTime = timestamp - this.lastTickTime;
         this.lastTickTime = timestamp;
 
-        this.update(deltaTime);
+        this.update(deltaTime, timestamp);
         this.renderManager.draw(this.currentScene, this.floor, this.bird, this.pipeManager);
 
         // Always continue the animation frame

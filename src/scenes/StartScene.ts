@@ -19,8 +19,8 @@ export class StartScene implements Scene {
     this.sprite = new Sprite("/images/sprites.png");
   }
 
-  update(deltaTime: number) {
-    this.bird.oscillate();
+  update(deltaTime: number, timestamp: number) {
+    this.bird.oscillate(timestamp);
     this.floor.update(deltaTime);
   }
 

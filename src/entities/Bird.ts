@@ -14,11 +14,12 @@ export class Bird implements GameObject {
     private sprite: Sprite;
     private baseY: number;
     private startTime: number;
-    
-    private currentFrame: number = 0;
-    private lastFrameUpdate: number = 0;
-    private readonly FRAME_INTERVAL: number = 100; // Milliseconds between frame updates
-    private readonly SPRITE_X_POSITIONS: number[] = [3, 31, 59, 31];
+    private currentTime = 0;
+
+    private currentFrame = 0;
+    private lastFrameUpdate = 0;
+    private readonly FRAME_INTERVAL = 100
+    private readonly SPRITE_X_POSITIONS = [3, 31, 59, 31];
 
     constructor(canvas: HTMLCanvasElement) {
         this.x = config.bird.startX;
@@ -36,15 +37,16 @@ export class Bird implements GameObject {
         this.velocity = config.bird.jumpStrength;
     }
 
-    update(deltaTime: number) {
+    update(deltaTime: number, timestamp: number) {
+        this.currentTime = timestamp;
         const deltaSeconds = deltaTime / 1000;
 
         this.velocity += config.physics.gravity * deltaSeconds;
         this.y += this.velocity * deltaSeconds;
     }
 
-    oscillate() {
-        const elapsedTime = (performance.now() - this.startTime) / 1000;
+    oscillate(timestamp: number) {
+        const elapsedTime = (timestamp - this.startTime) / 1000;
         const amplitude = 3; // pixels
         const frequency = 1; // oscillations per second
         this.y = this.baseY + amplitude * Math.sin(frequency * elapsedTime * Math.PI * 2);
@@ -55,11 +57,10 @@ export class Bird implements GameObject {
     }
 
     draw(ctx: CanvasRenderingContext2D) {
-        // Update animation frame
-        const currentTime = performance.now();
-        if (currentTime - this.lastFrameUpdate > this.FRAME_INTERVAL) {
+        // Use stored timestamp for animation
+        if (this.currentTime - this.lastFrameUpdate > this.FRAME_INTERVAL) {
             this.currentFrame = (this.currentFrame + 1) % this.SPRITE_X_POSITIONS.length;
-            this.lastFrameUpdate = currentTime;
+            this.lastFrameUpdate = this.currentTime;
         }
 
         // Calculate the rotation angle based on the velocity
