@@ -29,8 +29,6 @@ export class MainScene implements Scene {
         this.pipeManager.update(deltaTime);
         this.scoreManager.update(this.bird, this.pipeManager.getPipes())
 
-        this.collisionManager.checkCollisions(this.bird, this.pipeManager.getPipes());
-
         if (this.collisionManager.checkCollisions(this.bird, this.pipeManager.getPipes())) {  
             this.isGameOver = true;
         }
