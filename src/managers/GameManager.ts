@@ -6,7 +6,10 @@ import { RenderManager } from "@/src/managers/RenderManager";
 import { ScoreManager } from '@/src/managers/ScoreManager';
 import { setupCanvas } from "@/src/utils/canvas";
 
-import type { GameState } from "@/src/types";
+import { StartScene } from "@/src/scenes/StartScene";
+import { MainScene } from "@/src/scenes/MainScene";
+
+import type { GameState, Scene } from "@/src/types";
 
 export class GameManager {
     private readonly canvas;
@@ -18,6 +21,7 @@ export class GameManager {
     private readonly floor;
 
     private gameState: GameState = 'START';
+    private currentScene: Scene;
     private bird;
     private lastTickTime = 0;
 
@@ -31,6 +35,8 @@ export class GameManager {
         this.renderManager = new RenderManager(this.ctx, this.canvas);
         this.scoreManager = new ScoreManager();
         this.floor = new Floor(this.canvas);
+
+        this.currentScene = new StartScene(this.bird, this.floor);
 
         this.setupEventListeners();
     }
@@ -46,32 +52,33 @@ export class GameManager {
     }
 
     private handleInput() {
-        if (this.gameState === 'RUNNING') {
+        if (this.currentScene.getCurrentScene() === 'START') {
             this.bird.jump();
         }
 
-        if (this.gameState === "OVER" || this.gameState === 'START') {
+        if (this.currentScene.getCurrentScene() === "OVER" || this.currentScene.getCurrentScene() === 'START') {
             this.resetGame();
         }
     }
 
     private resetGame() {
-        this.gameState = 'RUNNING';
         this.bird = new Bird(this.canvas);
         this.pipeManager.reset();
         this.scoreManager.reset();
         this.lastTickTime = performance.now();
+
+        this.currentScene = new MainScene(this.bird, this.floor, this.pipeManager, this.scoreManager, this.collisionManager);
     }
 
     private update(deltaTime: number) {
         if (this.gameState !== 'OVER') {
             this.floor.update(deltaTime);
         }
-        
+
         if (this.gameState !== 'RUNNING') {
             return;
         }
-        
+
         this.bird.update(deltaTime);
         this.pipeManager.update(deltaTime);
         this.scoreManager.update(this.bird, this.pipeManager.getPipes());
@@ -85,8 +92,10 @@ export class GameManager {
         const deltaTime = timestamp - this.lastTickTime;
         this.lastTickTime = timestamp;
 
-        this.update(deltaTime);
-        this.renderManager.draw(this.bird, this.pipeManager, this.scoreManager, this.gameState, this.floor);
+        // this.update(deltaTime);
+        this.currentScene.update(deltaTime);
+        // this.renderManager.draw(this.bird, this.pipeManager, this.scoreManager, this.gameState, this.floor);
+        this.currentScene.draw(this.ctx);
 
         // Always continue the animation frame
         requestAnimationFrame((time) => this.gameLoop(time));

@@ -8,3 +8,9 @@ export interface GameObject {
     update(deltaTime: number): void;
     draw(ctx: CanvasRenderingContext2D): void;
 }
+
+export interface Scene {
+    update(deltaTime: number): void;
+    draw(ctx: CanvasRenderingContext2D): void;
+    getCurrentScene(): GameState;
+}
