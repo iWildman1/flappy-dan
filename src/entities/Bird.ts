@@ -43,7 +43,8 @@ export class Bird implements GameObject {
     }
 
     oscillate(timestamp: number) {
-        const elapsedTime = (timestamp - this.startTime) / 1000;
+        this.currentTime = timestamp;
+        const elapsedTime = (this.currentTime - this.startTime) / 1000;
         const amplitude = 3; // pixels
         const frequency = 1; // oscillations per second
         this.y = this.baseY + amplitude * Math.sin(frequency * elapsedTime * Math.PI * 2);
