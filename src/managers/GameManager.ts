@@ -1,4 +1,5 @@
 import { Bird } from "@/src/entities/Bird";
+import { Floor } from "@/src/entities/Floor";
 import { CollisionManager } from "@/src/managers/CollisionManager";
 import { PipeManager } from "@/src/managers/PipeManager"
 import { RenderManager } from "@/src/managers/RenderManager";
@@ -14,8 +15,9 @@ export class GameManager {
     private readonly pipeManager;
     private readonly renderManager;
     private readonly scoreManager;
+    private readonly floor;
 
-    private gameState: GameState = 'RUNNING';
+    private gameState: GameState = 'START';
     private bird;
     private lastTickTime = 0;
 
@@ -28,6 +30,7 @@ export class GameManager {
         this.pipeManager = new PipeManager(this.canvas);
         this.renderManager = new RenderManager(this.ctx, this.canvas);
         this.scoreManager = new ScoreManager();
+        this.floor = new Floor(this.canvas);
 
         this.setupEventListeners();
     }
@@ -58,14 +61,17 @@ export class GameManager {
         this.pipeManager.reset();
         this.scoreManager.reset();
         this.lastTickTime = performance.now();
-        requestAnimationFrame((time) => this.gameLoop(time));
     }
 
     private update(deltaTime: number) {
+        if (this.gameState !== 'OVER') {
+            this.floor.update(deltaTime);
+        }
+        
         if (this.gameState !== 'RUNNING') {
             return;
         }
-
+        
         this.bird.update(deltaTime);
         this.pipeManager.update(deltaTime);
         this.scoreManager.update(this.bird, this.pipeManager.getPipes());
@@ -80,15 +86,14 @@ export class GameManager {
         this.lastTickTime = timestamp;
 
         this.update(deltaTime);
-        this.renderManager.draw(this.bird, this.pipeManager, this.scoreManager, this.gameState);
+        this.renderManager.draw(this.bird, this.pipeManager, this.scoreManager, this.gameState, this.floor);
 
-        if (this.gameState === 'RUNNING') {
-            requestAnimationFrame((time) => this.gameLoop(time))
-        }
+        // Always continue the animation frame
+        requestAnimationFrame((time) => this.gameLoop(time));
     }
 
     start() {
-        this.gameState = 'RUNNING';
+        this.gameState = 'START';
         this.lastTickTime = performance.now();
         requestAnimationFrame((time) => this.gameLoop(time));
     }

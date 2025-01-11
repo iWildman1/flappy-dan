@@ -1,3 +1,4 @@
+import { Sprite } from '@/src/utils/Sprite'
 import { config } from '@/src/config';
 import { getCanvasDimensions } from '@/src/utils/canvas';
 
@@ -9,16 +10,20 @@ export class Pipe implements GameObject {
     private topHeight;
     private bottomY;
     private readonly canvas;
+    private sprite: Sprite;
 
     constructor(canvas: HTMLCanvasElement) {
         this.canvas = canvas;
-
         const dimensions = getCanvasDimensions(this.canvas);
+        const floorHeight = 55;
+        const usableHeight = dimensions.height - floorHeight;
         
         this.x = dimensions.width;
         this.width = config.pipes.width;
-        this.topHeight = Math.random() * (dimensions.height - config.pipes.gapHeight - 100) + 50;
+        this.topHeight = Math.random() * (usableHeight - config.pipes.gapHeight - 100) + 50;
         this.bottomY = this.topHeight + config.pipes.gapHeight;
+
+        this.sprite = new Sprite('/images/sprites.png');
     }
 
     update(deltaTime: number) {
@@ -29,9 +34,37 @@ export class Pipe implements GameObject {
     draw(ctx: CanvasRenderingContext2D) {
         const dimensions = getCanvasDimensions(this.canvas);
 
-        ctx.fillStyle = "green";
-        ctx.fillRect(this.x, 0, this.width, this.topHeight);
-        ctx.fillRect(this.x, this.bottomY, this.width, dimensions.height - this.bottomY);
+        // Draw top pipe
+        this.drawPipe(ctx, this.x, 0, this.topHeight, true);
+
+        // Draw bottom pipe
+        this.drawPipe(ctx, this.x, this.bottomY, dimensions.height - this.bottomY, false);
+    }
+
+    private drawPipe(ctx: CanvasRenderingContext2D, x: number, y: number, height: number, isTop: boolean) {
+        const pipeWidth = 26;
+        const pipeBodyHeight = 1;
+        const pipeCapHeight = 13;
+        const pipeBodyY = 323;
+        const pipeCapY = 470;
+
+        if (isTop) {
+            // Draw the body
+            for (let i = 0; i < height - pipeCapHeight; i++) {
+                this.sprite.draw(ctx, 56, pipeBodyY, pipeWidth, pipeBodyHeight, x, y + i, this.width, pipeBodyHeight);
+            }
+
+            // Draw the cap
+            this.sprite.draw(ctx, 56, pipeCapY, pipeWidth, pipeCapHeight, x, y + height - pipeCapHeight, this.width, pipeCapHeight);
+        } else {
+            // Draw the cap
+            this.sprite.draw(ctx, 56, pipeCapY, pipeWidth, pipeCapHeight, x, y, this.width, pipeCapHeight);
+
+            // Draw the body
+            for (let i = pipeCapHeight; i < height; i++) {
+                this.sprite.draw(ctx, 56, pipeBodyY, pipeWidth, pipeBodyHeight, x, y + i, this.width, pipeBodyHeight);
+            }
+        }
     }
 
     isOffScreen() {

@@ -1,3 +1,5 @@
+import { config } from '@/src/config';
+
 export function setupCanvas(canvas: HTMLCanvasElement) {
     const ctx = canvas.getContext('2d');
     const scale = window.devicePixelRatio;
@@ -6,8 +8,17 @@ export function setupCanvas(canvas: HTMLCanvasElement) {
         throw new Error("Failed to find canvas context");
     }
 
-    const width = window.innerWidth;
-    const height = window.innerHeight;
+    let width = window.innerWidth;
+    let height = window.innerHeight;
+    
+    if (width / height > config.canvas.aspectRatio) {
+        width = height * config.canvas.aspectRatio;
+    } else {
+        height = width / config.canvas.aspectRatio;
+    }
+
+
+    // 430 x 600 <-- base and aspect ratio
 
     canvas.width = width * scale;
     canvas.height = height * scale;

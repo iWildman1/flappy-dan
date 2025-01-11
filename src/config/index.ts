@@ -1,11 +1,12 @@
 export const config = {
     canvas: {
-        width: 1039,
-        height: 714
+        aspectRatio: 430 / 600,
+        width: 430,
+        height: 600
     },
     bird: {
         width: 30,
-        height: 30,
+        height: 21,
         startX: 100,
         startY: 300,
         jumpStrength: -300

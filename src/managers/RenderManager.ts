@@ -1,7 +1,8 @@
 import { Bird } from "@/src/entities/Bird";
+import { Floor } from "@/src/entities/Floor";
 import { PipeManager } from "@/src/managers/PipeManager";
 import { ScoreManager } from '@/src/managers/ScoreManager';
-import { config } from "@/src/config";
+import { StartScreen } from '@/src/states/StartScreenState';
 import { getCanvasDimensions } from '@/src/utils/canvas';
 
 import type { GameState } from "@/src/types";
@@ -9,29 +10,49 @@ import type { GameState } from "@/src/types";
 export class RenderManager {
     private readonly ctx;
     private readonly canvas;
+    private image: HTMLImageElement | null = null;
+    private readonly startScreen;
+    private startTime: number = performance.now();
 
     constructor(ctx: CanvasRenderingContext2D, canvas: HTMLCanvasElement) {
         this.ctx = ctx;
         this.canvas = canvas;
+
+        const image = new Image();
+        image.src = '/images/sprites.png';
+
+        image.onload = () => {
+            this.image = image;
+        }
+
+        this.startScreen = new StartScreen(this.canvas);
     }
 
-    draw(bird: Bird, pipeManager: PipeManager, scoreManager: ScoreManager, gameState: GameState) {
+    draw(bird: Bird, pipeManager: PipeManager, scoreManager: ScoreManager, gameState: GameState, floor: Floor) {
         this.drawBackground();
-
         bird.draw(this.ctx);
         pipeManager.draw(this.ctx);
+        floor.draw(this.ctx); // Draw floor after pipes but before UI
         scoreManager.draw(this.ctx);
 
         if (gameState === 'OVER') {
             this.drawGameOver(scoreManager.getScore());
+        }
+
+        if (gameState === 'START') {
+            bird.oscillate();
+            this.startScreen.draw(this.ctx);
         }
     }
 
     private drawBackground() {
         const dimensions = getCanvasDimensions(this.canvas);
 
-        this.ctx.fillStyle = "#70c5ce";
-        this.ctx.fillRect(0, 0, dimensions.width, dimensions.height);
+        if (this.image) {
+            this.ctx.imageSmoothingEnabled = true;
+            this.ctx.imageSmoothingQuality = 'high';
+            this.ctx.drawImage(this.image, 0, 0, 144, 255, 0, 0, dimensions.width, dimensions.height);
+        }
     }
 
     private drawGameOver(finalScore: number) {
